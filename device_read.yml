@@ -1,0 +1,67 @@
+---
+
+- name: "0: read configuration from device and push data to GitHub"
+  hosts: all
+  gather_facts: no
+  vars: 
+    - intfs: {}
+
+  tasks: 
+
+  - name: "1.0: checkout SoT from GitHub"
+    git: 
+      repo: https://github.com/maxrainer/net-demo-data.git
+      dest: "{{ inventory_dir }}"
+      update: no
+    run_once: true
+  
+  - name: "1.1: clean local host variable files"
+    file: 
+     state: absent
+     path: "{{ inventory_dir }}/host_vars/{{ inventory_hostname }}.yaml"
+  
+  - name: "2.0: Cisco IOS"
+    block:
+      - name: IOS
+        ios_facts: 
+          gather_network_resources: interfaces
+        register: _facts
+        become: true
+      - include_tasks: "./includes/write_hostvars.yml"
+    when: ansible_network_os == 'ios'
+  
+  - name: "3.0: Cisco IOS-XR"
+    block: 
+      - name: IOSXR
+        iosxr_facts: 
+          gather_network_resources: interfaces
+        register: _facts
+        become: true
+      - include_tasks: "./includes/write_hostvars.yml"
+    when: ansible_network_os == 'iosxr'
+
+  - name: "4.0: Cisco Nexus NXOS"
+    block: 
+      - name: NXOS
+        nxos_facts: 
+          gather_network_resources: interfaces
+        register: _facts
+      - include_tasks: "./includes/write_hostvars.yml"
+    when: ansible_network_os == 'nxos'
+
+  - name: "5.0: push SoT to GitHub"
+    command: "{{ item }}"
+    loop:
+      - "git add ."
+      - "git commit -m 'by ansible'"
+      - "git push"
+    args: 
+      chdir: "{{ inventory_dir }}"
+    run_once: true
+
+  
+
+    
+    
+
+    

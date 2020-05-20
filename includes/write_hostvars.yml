@@ -1,0 +1,7 @@
+---
+
+- name: "write to host vars file"
+  copy: 
+    content: "{{ intfs | combine({'intfs': _facts.ansible_facts.ansible_net_interfaces }) | to_nice_yaml }}"
+    dest: "{{ inventory_dir }}/host_vars/{{ inventory_hostname }}.yaml"
+    force: yes
