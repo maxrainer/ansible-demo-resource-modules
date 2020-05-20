@@ -15,8 +15,8 @@
     description: {{ intfs[intf].description | default(omit) }}
 {% if not inventory_hostname in groups['csr1000v'] %}
     duplex: {{ intfs[intf].duplex | lower | replace ('none','auto') }}
-{% endif %}
     speed: "{{ intfs[intf].bandwidth // 1000 }}"
+{% endif %}
     enabled: {{ intfs[intf].operstatus | default(omit) | replace ('administratively down', 'false') | replace('up','true') }}
 {% endif -%}
 {% endif -%}

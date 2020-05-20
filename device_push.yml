@@ -1,6 +1,6 @@
 ---
 
-- name: push config to device
+- name: PUSH CONFIGS TO DEVICES
   hosts: all
   gather_facts: no
   vars: 
@@ -8,39 +8,45 @@
 
   tasks:
 
-  - name: debug
-    debug: 
-      var: hostvars[inventory_hostname]
-
-  - name: debug
-    debug: 
-      var: intfs
-
-  - set_fact: 
+  - name: "1.0: prepare some facts"
+    set_fact: 
       _intfs_cache: "{{ lookup('template', './templates/interfaces.j2') | from_yaml }}"
-  
-  - name: debug2
-    debug: 
-      var: _intfs_cache
-
+      _intfs_l3_cache: "{{ lookup('template', './templates/l3_interfaces.j2') | from_yaml }}"
     
-  - name: write interface to Cisco IOS
-    ios_interfaces: 
-      config: "{{ _intfs_cache }}"
-      state: merged
+  - name: "2.0: Cisco IOS Devices"
+    block:
+    - name: "2.1: write interface attributes to Cisco IOS"
+      ios_interfaces: 
+        config: "{{ _intfs_cache }}"
+        state: merged
+    - name: "2.2: write interface L3 config to Cisco IOS"
+      ios_l3_interfaces: 
+        config: "{{ _intfs_l3_cache }}"
+        state: merged
     become: true
     when: ansible_network_os == 'ios'
-
-  - name: write interface to Cisco IOSXR
-    iosxr_interfaces: 
-      config: "{{ _intfs_cache }}"
-      state: merged
+  
+  - name: "3.0: Cisco IOS XR Devices"
+    block:
+    - name: "3.1: write interface attributes to Cisco IOS XR"
+      iosxr_interfaces: 
+        config: "{{ _intfs_cache }}"
+        state: merged
+    - name: "3.2: write interface L3 config to Cisco IOS XR"
+      iosxr_l3_interfaces: 
+        config: "{{ _intfs_l3_cache }}"
+        state: merged
     become: true
     when: ansible_network_os == 'iosxr'
-  
-  - name: write interface to Cisco NXOS 
-    nxos_interfaces: 
-      config: "{{ _intfs_cache }}"
-      state: merged
-    when: ansible_network_os == 'nxos'
 
+  - name: "4.0: Cisco Nexus Devices"
+    block:
+    - name: "4.1: write interface attributes to Cisco Nexus"
+      nxos_interfaces: 
+        config: "{{ _intfs_cache }}"
+        state: merged
+    - name: "4.2: write interface L3 config to Cisco Nexus"
+      nxos_l3_interfaces: 
+        config: "{{ _intfs_l3_cache }}"
+        state: merged
+    when: ansible_network_os == 'nxos'
