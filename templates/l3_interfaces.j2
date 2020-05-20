@@ -1,5 +1,5 @@
 {% for intf in intfs %}
-{% if not 'Loopback' in intf and not 'mgmt' in intf and not 'Ethernet3' in intf and not 'Ethernet4' in intf %}
+{% if not 'Loopback' in intf and not 'mgmt' in intf and not 'Ethernet3' in intf and not 'Ethernet4' in intf and not 'Vlan' in intf %}
   - name: {{ intf }}
 {% if intfs[intf].ipv4 is defined and intfs[intf].ipv4|length %}
     ipv4: [

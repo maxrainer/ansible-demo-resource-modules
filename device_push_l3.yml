@@ -31,14 +31,14 @@
     when: ansible_network_os == 'ios'
 
   - name: write interface to Cisco IOSXR
-    iosxr_interfaces: 
+    iosxr_l3_interfaces: 
       config: "{{ _intfs_cache }}"
       state: merged
     become: true
     when: ansible_network_os == 'iosxr'
   
   - name: write interface to Cisco NXOS 
-    nxos_interfaces: 
+    nxos_l3_interfaces: 
       config: "{{ _intfs_cache }}"
       state: merged
     when: ansible_network_os == 'nxos'

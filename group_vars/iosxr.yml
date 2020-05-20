@@ -1,0 +1,5 @@
+---
+
+connection: network_cli
+ansible_ssh_pass: cisco
+ansible_network_os: iosxr
