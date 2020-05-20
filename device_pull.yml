@@ -20,21 +20,36 @@
      state: absent
      path: "{{ inventory_dir }}/host_vars/{{ inventory_hostname }}.yaml"
   
-  - name: "2.0: Cisco IOS"
+  - name: "2.0: Cisco IOS Router"
     block:
-      - name: IOS
+      - name: IOS Router
         ios_facts: 
-          gather_network_resources: interfaces
+          gather_network_resources: 
+            - interfaces
+            - l3_interfaces
         register: _facts
         become: true
       - include_tasks: "./includes/write_hostvars.yml"
-    when: ansible_network_os == 'ios'
+    when: ansible_network_os == 'ios' and inventory_hostname not in groups['switch']
+
+  - name: "2.1: Cisco IOS Switch"
+    block:
+      - name: IOS Switches
+        ios_facts: 
+          gather_network_resources: 
+            - all
+        register: _facts
+        become: true
+      - debug: var=_facts
+      - include_tasks: "./includes/write_hostvars.yml"
+    when: ansible_network_os == 'ios' and inventory_hostname in groups['switch']
   
   - name: "3.0: Cisco IOS-XR"
     block: 
       - name: IOSXR
         iosxr_facts: 
-          gather_network_resources: interfaces
+          gather_network_resources: 
+            - all
         register: _facts
         become: true
       - include_tasks: "./includes/write_hostvars.yml"
@@ -44,7 +59,8 @@
     block: 
       - name: NXOS
         nxos_facts: 
-          gather_network_resources: interfaces
+          gather_network_resources: 
+            - all
         register: _facts
       - include_tasks: "./includes/write_hostvars.yml"
     when: ansible_network_os == 'nxos'

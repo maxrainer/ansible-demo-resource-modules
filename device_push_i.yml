@@ -22,7 +22,6 @@
   - name: debug2
     debug: 
       var: _intfs_cache
-
     
   - name: write interface to Cisco IOS
     ios_interfaces: 

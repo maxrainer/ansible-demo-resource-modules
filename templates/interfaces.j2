@@ -8,7 +8,6 @@
 {% elif 'nxos' in ansible_network_os %}
   - name: {{ intf }} 
     description: {{ intfs[intf].description | default(omit) }}
-    duplex: {{ intfs[intf].duplex | lower | replace ('none','auto') }}
     speed: "{{ intfs[intf].bandwidth // 1000 }}"
 {% else %}
   - name: {{ intf }} 

@@ -8,20 +8,20 @@
 
   tasks:
 
-  - name: "1.0: prepare some facts"
-    set_fact: 
-      _intfs_cache: "{{ lookup('template', './templates/interfaces.j2') | from_yaml }}"
-      _intfs_l3_cache: "{{ lookup('template', './templates/l3_interfaces.j2') | from_yaml }}"
+  # - name: "1.0: prepare some facts"
+  #   set_fact: 
+  #     _intfs_cache: "{{ lookup('template', './templates/interfaces.j2') | from_yaml }}"
+  #     _intfs_l3_cache: "{{ lookup('template', './templates/l3_interfaces.j2') | from_yaml }}"
     
   - name: "2.0: Cisco IOS Devices"
     block:
     - name: "2.1: write interface attributes to Cisco IOS"
       ios_interfaces: 
-        config: "{{ _intfs_cache }}"
+        config: "{{ intfs.interfaces }}"
         state: merged
     - name: "2.2: write interface L3 config to Cisco IOS"
       ios_l3_interfaces: 
-        config: "{{ _intfs_l3_cache }}"
+        config: "{{ intfs.l3_interfaces }}"
         state: merged
     become: true
     when: ansible_network_os == 'ios'
@@ -30,11 +30,11 @@
     block:
     - name: "3.1: write interface attributes to Cisco IOS XR"
       iosxr_interfaces: 
-        config: "{{ _intfs_cache }}"
+        config: "{{ intfs.interfaces }}"
         state: merged
     - name: "3.2: write interface L3 config to Cisco IOS XR"
       iosxr_l3_interfaces: 
-        config: "{{ _intfs_l3_cache }}"
+        config: "{{ intfs.l3_interfaces }}"
         state: merged
     become: true
     when: ansible_network_os == 'iosxr'
@@ -43,10 +43,10 @@
     block:
     - name: "4.1: write interface attributes to Cisco Nexus"
       nxos_interfaces: 
-        config: "{{ _intfs_cache }}"
+        config: "{{ intfs.interfaces }}"
         state: merged
-    - name: "4.2: write interface L3 config to Cisco Nexus"
-      nxos_l3_interfaces: 
-        config: "{{ _intfs_l3_cache }}"
-        state: merged
+    # - name: "4.2: write interface L3 config to Cisco Nexus"
+    #   nxos_l3_interfaces: 
+    #     config: "{{ intfs.l3_interfaces }}"
+    #     state: merged
     when: ansible_network_os == 'nxos'
