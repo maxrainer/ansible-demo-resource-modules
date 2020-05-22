@@ -19,7 +19,7 @@
     - name: "2.3: write VLAN config to IOS Switch"
       ios_vlans:
         config: "{{ intfs.vlans }}"
-        state: replaced
+        state: merged
       register: _result_ios_vlan
       when: inventory_hostname in groups['switch']
     - name: "2.4: write interface L2 config to Cisco IOS Switch"
