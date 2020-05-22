@@ -24,9 +24,9 @@
      path: "{{ sot_dir }}/host_vars/{{ inventory_hostname }}.yaml"
     connection: local
   
-  - name: "2.0: gather Cisco IOS Router facts"
+  - name: "IOS Router"
     block:
-      - name: IOS Router
+      - name: "2.0: gather Cisco IOS Router facts"
         ios_facts: 
           gather_network_resources: 
             - interfaces
@@ -36,9 +36,9 @@
       - include_tasks: "./includes/write_hostvars.yml"
     when: ansible_network_os == 'ios' and inventory_hostname not in groups['switch']
 
-  - name: "2.1: gather Cisco IOS Switch facts"
+  - name: "IOS Switch"
     block: 
-      - name: IOS Switches
+      - name: "2.1: gather Cisco IOS Switch facts"
         ios_facts: 
           gather_network_resources: 
             - all
@@ -47,9 +47,9 @@
       - include_tasks: "./includes/write_hostvars.yml"
     when: ansible_network_os == 'ios' and inventory_hostname in groups['switch']
   
-  - name: "3.0: gather Cisco IOS-XR facts"
+  - name: IOS-XR
     block: 
-      - name: IOSXR
+      - name: "3.0: gather Cisco IOS-XR facts"
         iosxr_facts: 
           gather_network_resources: 
             - all
@@ -58,9 +58,9 @@
       - include_tasks: "./includes/write_hostvars.yml"
     when: ansible_network_os == 'iosxr'
 
-  - name: "4.0: gather Cisco Nexus NXOS facts"
+  - name: NXOS
     block: 
-      - name: NXOS
+      - name: "4.0: gather Cisco Nexus NXOS facts"
         nxos_facts: 
           gather_network_resources: 
             - all
