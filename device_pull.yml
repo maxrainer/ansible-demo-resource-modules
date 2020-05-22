@@ -5,6 +5,7 @@
   gather_facts: no
   vars: 
     - intfs: {}
+    - sot_dir: "{{ inventory_dir }}"
   connection: network_cli
 
   tasks: 
@@ -12,7 +13,7 @@
   - name: "1.0: checkout SoT from GitHub"
     git: 
       repo: https://github.com/maxrainer/net-demo-data.git
-      dest: "{{ inventory_dir }}"
+      dest: "{{ sot_dir }}"
       update: no
     run_once: true
     connection: local
@@ -20,7 +21,7 @@
   - name: "1.1: clean local host variable files"
     file: 
      state: absent
-     path: "{{ inventory_dir }}/host_vars/{{ inventory_hostname }}.yaml"
+     path: "{{ sot_dir }}/host_vars/{{ inventory_hostname }}.yaml"
     connection: local
   
   - name: "2.0: Cisco IOS Router"
@@ -74,7 +75,7 @@
       - "git commit -m 'by ansible'"
       - "git push"
     args: 
-      chdir: "{{ inventory_dir }}"
+      chdir: "{{ sot_dir }}"
     run_once: true
     connection: local
     
