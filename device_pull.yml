@@ -24,7 +24,7 @@
      path: "{{ sot_dir }}/host_vars/{{ inventory_hostname }}.yaml"
     connection: local
   
-  - name: "2.0: Cisco IOS Router"
+  - name: "2.0: gather Cisco IOS Router facts"
     block:
       - name: IOS Router
         ios_facts: 
@@ -36,8 +36,8 @@
       - include_tasks: "./includes/write_hostvars.yml"
     when: ansible_network_os == 'ios' and inventory_hostname not in groups['switch']
 
-  - name: "2.1: Cisco IOS Switch"
-    block:
+  - name: "2.1: gather Cisco IOS Switch facts"
+    block: 
       - name: IOS Switches
         ios_facts: 
           gather_network_resources: 
@@ -47,7 +47,7 @@
       - include_tasks: "./includes/write_hostvars.yml"
     when: ansible_network_os == 'ios' and inventory_hostname in groups['switch']
   
-  - name: "3.0: Cisco IOS-XR"
+  - name: "3.0: gather Cisco IOS-XR facts"
     block: 
       - name: IOSXR
         iosxr_facts: 
@@ -58,7 +58,7 @@
       - include_tasks: "./includes/write_hostvars.yml"
     when: ansible_network_os == 'iosxr'
 
-  - name: "4.0: Cisco Nexus NXOS"
+  - name: "4.0: gather Cisco Nexus NXOS facts"
     block: 
       - name: NXOS
         nxos_facts: 
@@ -71,6 +71,8 @@
   - name: "5.0: push SoT to GitHub"
     command: "{{ item }}"
     loop:
+      - "git config user.email 'mr@maxrainer.net'"
+      - "git config user.name 'awx user'"
       - "git add ."
       - "git commit -m 'by ansible'"
       - "git push"

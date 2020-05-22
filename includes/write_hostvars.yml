@@ -5,3 +5,4 @@
     content: "{{ intfs | combine({'intfs': _facts.ansible_facts.ansible_network_resources }) | to_nice_yaml }}"
     dest: "{{ sot_dir }}/host_vars/{{ inventory_hostname }}.yaml"
     force: yes
+  connection: local
