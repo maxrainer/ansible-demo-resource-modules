@@ -3,6 +3,7 @@
 - name: PUSH CONFIGS TO DEVICES TEST OPER STATE AND ROLLBACK
   hosts: all
   gather_facts: no
+  connection: network_cli
 
   tasks:
     

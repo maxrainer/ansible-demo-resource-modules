@@ -74,10 +74,11 @@
       - "git config user.email 'mr@maxrainer.net'"
       - "git config user.name 'awx user'"
       - "git add ."
-      - "git diff-index --quiet HEAD || git commit -m 'by ansible'"
+      - "git commit -m 'by ansible'"
       - "git push"
     args: 
       chdir: "{{ sot_dir }}"
     run_once: true
     connection: local
+    ignore_errors: yes
     
