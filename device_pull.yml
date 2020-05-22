@@ -5,6 +5,7 @@
   gather_facts: no
   vars: 
     - intfs: {}
+  connection: network_cli
 
   tasks: 
 
@@ -14,11 +15,13 @@
       dest: "{{ inventory_dir }}"
       update: no
     run_once: true
+    connection: local
   
   - name: "1.1: clean local host variable files"
     file: 
      state: absent
      path: "{{ inventory_dir }}/host_vars/{{ inventory_hostname }}.yaml"
+    connection: local
   
   - name: "2.0: Cisco IOS Router"
     block:
@@ -40,7 +43,6 @@
             - all
         register: _facts
         become: true
-      - debug: var=_facts
       - include_tasks: "./includes/write_hostvars.yml"
     when: ansible_network_os == 'ios' and inventory_hostname in groups['switch']
   
@@ -74,10 +76,5 @@
     args: 
       chdir: "{{ inventory_dir }}"
     run_once: true
-
-  
-
-    
-    
-
+    connection: local
     

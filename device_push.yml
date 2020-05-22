@@ -1,28 +1,33 @@
 ---
 
-- name: PUSH CONFIGS TO DEVICES
+- name: PUSH CONFIGS TO DEVICES TEST OPER STATE AND ROLLBACK
   hosts: all
   gather_facts: no
-  vars: 
-    - intf_cache: {}
 
   tasks:
-
-  # - name: "1.0: prepare some facts"
-  #   set_fact: 
-  #     _intfs_cache: "{{ lookup('template', './templates/interfaces.j2') | from_yaml }}"
-  #     _intfs_l3_cache: "{{ lookup('template', './templates/l3_interfaces.j2') | from_yaml }}"
     
   - name: "2.0: Cisco IOS Devices"
     block:
     - name: "2.1: write interface attributes to Cisco IOS"
       ios_interfaces: 
         config: "{{ intfs.interfaces }}"
-        state: merged
+        state: replaced
     - name: "2.2: write interface L3 config to Cisco IOS"
       ios_l3_interfaces: 
         config: "{{ intfs.l3_interfaces }}"
         state: merged
+    - name: "2.3: write VLAN config to IOS Switch"
+      ios_vlans:
+        config: "{{ intfs.vlans }}"
+        state: replaced
+      register: _result_ios_vlan
+      when: inventory_hostname in groups['switch']
+    - name: "2.4: write interface L2 config to Cisco IOS Switch"
+      ios_l2_interfaces: 
+        config: "{{ intfs.l2_interfaces }}"
+        state: replaced
+      register: _result_ios_l2_interfaces
+      when: inventory_hostname in groups['switch']
     become: true
     when: ansible_network_os == 'ios'
   
@@ -44,9 +49,47 @@
     - name: "4.1: write interface attributes to Cisco Nexus"
       nxos_interfaces: 
         config: "{{ intfs.interfaces }}"
-        state: merged
-    # - name: "4.2: write interface L3 config to Cisco Nexus"
+        state: replaced
+    - name: "4.2: write VLAN config to Cisco Nexus"
+      nxos_vlans: 
+        config: "{{ intfs.vlans }}"
+        state: replaced
+      when: intfs.vlans is defined
+    - name: "4.3: write L2 interface config to Cisco Nexus"
+      nxos_l2_interfaces: 
+        config: "{{ intfs.l2_interfaces }}"
+        state: replaced
+      when: intfs.l2_interfaces is defined
+    # can't push to mgmt interface 
+    # therefore skipped
+    # - name: "4.4: write interface L3 config to Cisco Nexus"
     #   nxos_l3_interfaces: 
     #     config: "{{ intfs.l3_interfaces }}"
     #     state: merged
     when: ansible_network_os == 'nxos'
+
+  - name: "5.0: test operational state"
+    block:
+      - name: ping from IOS device to IOSXR
+        ios_ping:
+          dest: 10.10.100.104
+          count: 3
+        become: true
+    when: ansible_network_os == 'ios' and inventory_hostname in groups['router']
+    rescue:
+      - name: "5.1: rollback L2 interface config"
+        ios_l2_interfaces:
+          config: "{{ _result_ios_l2_interfaces.before }}"
+          state: replaced
+        when: _result_ios_l2_interfaces.changed
+      - name: "5.2: rollback VLAN config"
+        ios_vlans: 
+          config: "{{ _result_ios_vlan.before }}"
+          state: replaced
+        when: _result_ios_vlan.changed
+      
+
+
+
+
+        
