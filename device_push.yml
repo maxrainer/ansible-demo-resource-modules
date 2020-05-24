@@ -45,6 +45,9 @@
     become: true
     when: ansible_network_os == 'iosxr'
 
+  - debug: 
+      msg: "{{ intfs.l3_interfaces | json_query('[?name!=`mgmt0`]') }}"  
+
   - name: "4.0: Cisco Nexus Devices"
     block:
     - name: "4.1: write interface attributes to Cisco Nexus"
@@ -53,20 +56,18 @@
         state: replaced
     - name: "4.2: write VLAN config to Cisco Nexus"
       nxos_vlans: 
-        config: "{{ intfs.vlans }}"
-        state: replaced
+        config: "{{ intfs.vlans | json_query('[?vlan_id!=`1`]') }}"
+        state: overridden
       when: intfs.vlans is defined
     - name: "4.3: write L2 interface config to Cisco Nexus"
       nxos_l2_interfaces: 
         config: "{{ intfs.l2_interfaces }}"
         state: replaced
       when: intfs.l2_interfaces is defined
-    # can't push to mgmt interface 
-    # therefore skipped
-    # - name: "4.4: write interface L3 config to Cisco Nexus"
-    #   nxos_l3_interfaces: 
-    #     config: "{{ intfs.l3_interfaces }}"
-    #     state: merged
+    - name: "4.4: write interface L3 config to Cisco Nexus"
+      nxos_l3_interfaces: 
+        config: "{{ intfs.l3_interfaces | json_query('[?name!=`mgmt0`]') }}"
+        state: merged
     when: ansible_network_os == 'nxos'
 
   - name: "5.0: test operational state"
