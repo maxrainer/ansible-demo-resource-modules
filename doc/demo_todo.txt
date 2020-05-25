@@ -1,0 +1,32 @@
+1:  preparation:
+    CSR: int gi2
+        no ip address
+    NEXUS: 
+        nx-osv-1(config)# int e2/2
+        nx-osv-1(config-if)# no switchport access vlan 10
+        nx-osv-1(config-if)# no description 
+        nx-osv-1(config-if)# 
+        
+    delete file csr1000v-1.yaml
+    in file iosvl2-1.yaml delete
+        description: NEW link to iosv2
+        enabled: true
+    in file nexus ethernet2/2:
+        delete description and vlan config
+        
+    PUSH TO GIT
+
+2: 
+
+CSR:
+    l3_interfaces:
+        -   ipv4:
+        -   address: 10.10.100.103 255.255.255.0
+        name: GigabitEthernet2
+
+
+NEXUS: 
+    l2_interfaces:
+        -   access:
+            vlan: 10
+        name: Ethernet2/2
