@@ -16,7 +16,7 @@
     - name: "2.2: write interface L3 config to Cisco IOS"
       ios_l3_interfaces: 
         config: "{{ intfs.l3_interfaces }}"
-        state: merged
+        state: replaced
     - name: "2.3: write VLAN config to IOS Switch"
       ios_vlans:
         config: "{{ intfs.vlans }}"
@@ -37,11 +37,11 @@
     - name: "3.1: write interface attributes to Cisco IOS XR"
       iosxr_interfaces: 
         config: "{{ intfs.interfaces }}"
-        state: merged
+        state: replaced
     - name: "3.2: write interface L3 config to Cisco IOS XR"
       iosxr_l3_interfaces: 
         config: "{{ intfs.l3_interfaces }}"
-        state: merged
+        state: replaced
     become: true
     when: ansible_network_os == 'iosxr'
 
