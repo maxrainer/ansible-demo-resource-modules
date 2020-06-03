@@ -1,0 +1,41 @@
+---
+# check VLAN already exists with different name 
+
+- name: "0: check Cisco Nexus if VLAN exists"
+  hosts: nexus
+  gather_facts: no
+  connection: network_cli
+  vars: 
+    - vlan_id: 12
+    - vlan_name: twelves
+    - _query: "[?vlan_id==`{{ vlan_id }}`]"
+  tasks:
+
+  - name: "1.0: gather Cisco Nexus NXOS VLAN facts"
+    nxos_facts: 
+      gather_network_resources: 
+        - vlans
+    register: _vlan_facts
+  
+  - set_fact:
+      _spec_vlan: "{{ _vlan_facts.ansible_facts.ansible_network_resources.vlans 
+        | json_query(_query) }}"
+
+  - debug: 
+      var: _spec_vlan
+      verbosity: 2
+
+  - name: "2.0: fail when VLAN ID and name don't match"
+    assert:
+      that:
+        -  _spec_vlan[0].name == vlan_name 
+      fail_msg: "VLAN ID found but name already set to {{ _spec_vlan[0].name }}"
+      success_msg: "VLAN ID and name found and already correct"
+    when: _spec_vlan|length>0
+  
+  - name: create vlan
+    nxos_vlans:
+      config:
+        - vlan_id: "{{ vlan_id }}"
+          name: "{{ vlan_name }}"
+      state: merged
