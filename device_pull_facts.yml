@@ -7,7 +7,6 @@
     - network_resources: {}
     - sot_dir: "{{ inventory_dir }}"
   connection: network_cli
-
   tasks: 
 
   - name: "1.0: checkout SoT from GitHub"
