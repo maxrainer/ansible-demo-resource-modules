@@ -29,8 +29,7 @@
       - name: "2.0: gather Cisco IOS Router facts"
         cisco.ios.ios_facts: 
           gather_network_resources: 
-            - interfaces
-            - l3_interfaces
+            - all
         register: _facts
         become: true
       - include_tasks: "./includes/write_hostvars.yml"
