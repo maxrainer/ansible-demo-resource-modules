@@ -29,7 +29,12 @@
       - name: "2.0: gather Cisco IOS Router facts"
         cisco.ios.ios_facts: 
           gather_network_resources: 
-            - all
+            - "!vlans"
+            - "!lacp"
+            - "!lacp_interfaces"
+          gather_subset:
+            - '!all'
+            - '!min'
         register: _facts
         become: true
       - include_tasks: "./includes/write_hostvars.yml"
@@ -40,7 +45,11 @@
       - name: "2.1: gather Cisco IOS Switch facts"
         cisco.ios.ios_facts: 
           gather_network_resources: 
-            - all
+            - "!acl_interfaces"
+            - "!acls"
+          gather_subset:
+            - '!all'
+            - '!min'
         register: _facts
         become: true
       - include_tasks: "./includes/write_hostvars.yml"
@@ -49,7 +58,7 @@
   - name: IOS-XR
     block: 
       - name: "3.0: gather Cisco IOS-XR facts"
-        iosxr_facts: 
+        cisco.iosxr.iosxr_facts: 
           gather_network_resources: 
             - all
         register: _facts
@@ -60,9 +69,12 @@
   - name: NXOS
     block: 
       - name: "4.0: gather Cisco Nexus NXOS facts"
-        nxos_facts: 
+        cisco.nxos.nxos_facts: 
           gather_network_resources: 
             - all
+          gather_subset:
+            - '!all'
+            - '!min'
         register: _facts
       - include_tasks: "./includes/write_hostvars.yml"
     when: ansible_network_os == 'nxos'
