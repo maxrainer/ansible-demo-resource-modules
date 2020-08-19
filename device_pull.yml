@@ -27,7 +27,7 @@
   - name: "IOS Router"
     block:
       - name: "2.0: gather Cisco IOS Router facts"
-        ios_facts: 
+        cisco.ios.ios_facts: 
           gather_network_resources: 
             - interfaces
             - l3_interfaces
@@ -39,7 +39,7 @@
   - name: "IOS Switch"
     block: 
       - name: "2.1: gather Cisco IOS Switch facts"
-        ios_facts: 
+        cisco.ios.ios_facts: 
           gather_network_resources: 
             - all
         register: _facts

@@ -16,8 +16,3 @@ Matching inventory can be found here:
 [Demo SoT](https://github.com/maxrainer/net-demo-data)
 
 * ansible-playbook -i ../../inventory/net-demo-data/virl1.yaml.yml device_pull.yml
-
-
-
-
-
