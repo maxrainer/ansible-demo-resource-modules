@@ -4,7 +4,7 @@
   hosts: all
   gather_facts: no
   vars: 
-    - intfs: {}
+    - network_resources: {}
     - sot_dir: "{{ inventory_dir }}"
   connection: network_cli
 
@@ -21,7 +21,7 @@
   - name: "1.1: clean local host variable files"
     file: 
      state: absent
-     path: "{{ sot_dir }}/host_vars/{{ inventory_hostname }}.yaml"
+     path: "{{ sot_dir }}/host_vars/{{ inventory_hostname }}/net_resources.yaml"
     connection: local
   
   - name: "IOS Router"

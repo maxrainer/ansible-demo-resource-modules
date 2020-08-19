@@ -1,8 +1,13 @@
 ---
 
+- name: create host_var subdirectory
+  file:
+    path: "{{ sot_dir }}/host_vars/{{ inventory_hostname }}"
+    state: directory
+
 - name: "write to host vars file"
   copy: 
-    content: "{{ intfs | combine({'intfs': _facts.ansible_facts.ansible_network_resources }) | to_nice_yaml }}"
-    dest: "{{ sot_dir }}/host_vars/{{ inventory_hostname }}.yaml"
+    content: "{{ network_resources | combine({'network_resources': _facts.ansible_facts.ansible_network_resources }) | to_nice_yaml }}"
+    dest: "{{ sot_dir }}/host_vars/{{ inventory_hostname }}/net_resources.yaml"
     force: yes
   connection: local

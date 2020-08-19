@@ -13,23 +13,23 @@
     block:
     - name: "2.1: write interface attributes to Cisco IOS"
       cisco.ios.ios_interfaces: 
-        config: "{{ intfs.interfaces }}"
+        config: "{{ network_resources.interfaces }}"
         state: replaced
       register: _result_ios_interfaces
     - name: "2.2: write interface L3 config to Cisco IOS"
       cisco.ios.ios_l3_interfaces: 
-        config: "{{ intfs.l3_interfaces }}"
+        config: "{{ network_resources.l3_interfaces }}"
         state: replaced
       register: _result_ios_l3_interfaces
     - name: "2.3: write VLAN config to IOS Switch"
       cisco.ios.ios_vlans:
-        config: "{{ intfs.vlans }}"
+        config: "{{ network_resources.vlans }}"
         state: merged
       register: _result_ios_vlan
       when: inventory_hostname in groups['switch']
     - name: "2.4: write interface L2 config to Cisco IOS Switch"
       cisco.ios.ios_l2_interfaces: 
-        config: "{{ intfs.l2_interfaces }}"
+        config: "{{ network_resources.l2_interfaces }}"
         state: replaced
       register: _result_ios_l2_interfaces
       when: inventory_hostname in groups['switch']
@@ -40,14 +40,14 @@
     block:
     - name: "3.1: write interface attributes to Cisco IOS XR"
       cisco.iosxr.iosxr_interfaces: 
-        config: "{{ intfs.interfaces }}"
+        config: "{{ network_resources.interfaces }}"
         state: replaced
-      when: intfs.interfaces is defined
+      when: network_resources.interfaces is defined
     - name: "3.2: write interface L3 config to Cisco IOS XR"
       cisco.iosxr.iosxr_l3_interfaces: 
-        config: "{{ intfs.l3_interfaces }}"
+        config: "{{ network_resources.l3_interfaces }}"
         state: replaced
-      when: intfs.l3_interfaces is defined
+      when: network_resources.l3_interfaces is defined
     become: true
     when: ansible_network_os == 'iosxr'
 
@@ -55,23 +55,23 @@
     block:
     - name: "4.1: write interface attributes to Cisco Nexus"
       cisco.nxos.nxos_interfaces: 
-        config: "{{ intfs.interfaces }}"
+        config: "{{ network_resources.interfaces }}"
         state: replaced
     # VLAN ID 1 not allowed by module, therefor filtered
     - name: "4.2: write VLAN config to Cisco Nexus"
       cisco.nxos.nxos_vlans: 
-        config: "{{ intfs.vlans | json_query('[?vlan_id!=`1`]') }}"
+        config: "{{ network_resources.vlans | json_query('[?vlan_id!=`1`]') }}"
         state: overridden
-      when: intfs.vlans is defined and (intfs.vlans | length) > 1
+      when: network_resources.vlans is defined and (network_resources.vlans | length) > 1
     - name: "4.3: write L2 interface config to Cisco Nexus"
       cisco.nxos.nxos_l2_interfaces: 
-        config: "{{ intfs.l2_interfaces }}"
+        config: "{{ network_resources.l2_interfaces }}"
         state: replaced
-      when: intfs.l2_interfaces is defined
+      when: network_resources.l2_interfaces is defined
     # interface mgmt not allowed by module, therefor filtered
     - name: "4.4: write interface L3 config to Cisco Nexus"
       cisco.nxos.nxos_l3_interfaces: 
-        config: "{{ intfs.l3_interfaces | json_query('[?name!=`mgmt0`]') }}"
+        config: "{{ network_resources.l3_interfaces | json_query('[?name!=`mgmt0`]') }}"
         state: merged
     when: ansible_network_os == 'nxos'
 
