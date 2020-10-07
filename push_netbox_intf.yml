@@ -10,6 +10,7 @@
     - _netbox_url: "https://172.16.1.17"
     - _netbox_api_token: "0123456789abcdef0123456789abcdef01234567"
     - device_id: 2
+    - interface_filter: ""
 
   tasks:
 
@@ -29,12 +30,15 @@
         var: host_info.json.results
         verbosity: 2
     
-    - name: Configure network interfaces
+    - name: Configure L3 network interfaces
       cisco.ios.ios_l3_interfaces:
         config:
           - name: "{{ item.interface.name }}"
             ipv4:
               - address: "{{ item.address }}"
         state: replaced
-      with_items: "{{ host_info.json.results }}"
+      loop: "{{ host_info.json.results }}"
+      loop_control:
+        label: "{{ item.interface.name }} ==> {{ item.address }}"
+      when: interface_filter == "" or interface_filter == item.interface.name
       become: yes
