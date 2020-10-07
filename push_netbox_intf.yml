@@ -1,0 +1,40 @@
+---
+# pushes L3 interface config from Netbox IPAM
+# to IOS devices
+
+- name: Configure network interfaces
+  hosts: ios
+  connection: network_cli
+  gather_facts: no
+  vars:
+    - _netbox_url: "https://172.16.1.17"
+    - _netbox_api_token: "0123456789abcdef0123456789abcdef01234567"
+    - device_id: 2
+
+  tasks:
+
+    - name: get netbox json
+      uri:
+        url: "{{ _netbox_url }}/api/ipam/ip-addresses/?device_id={{ device_id }}"
+        method: GET
+        validate_certs: no
+        headers:
+          content-type: 'aplication/json'
+          Authorization: "Token {{ _netbox_api_token }}"
+        body_format: json
+      register: host_info
+      delegate_to: localhost
+    
+    - debug:
+        var: host_info.json.results
+        verbosity: 2
+    
+    - name: Configure network interfaces
+      cisco.ios.ios_l3_interfaces:
+        config:
+          - name: "{{ item.interface.name }}"
+            ipv4:
+              - address: "{{ item.address }}"
+        state: replaced
+      with_items: "{{ host_info.json.results }}"
+      become: yes

@@ -1,0 +1,39 @@
+---
+# under construction....
+
+- name: ADD LOOPBACK INTF TO DEVICE AND TO OSPF
+  hosts: ios
+  gather_facts: no
+  connection: network_cli
+  vars:
+    _int_name: loopback4
+    _int_description: "Loopback OSPF area 4"
+    _int_ip_address: "4.4.4.1"
+
+  tasks:
+
+  - name: add intf to IOS DEVICE
+    cisco.ios.ios_interfaces:
+      config:
+        - enabled: true
+          name: "{{ _int_name }}"
+          description: "{{ _int_description }}"
+      state: merged
+    become: true
+  
+  - name: add IPv4 address to IOS DEVICE
+    cisco.ios.ios_l3_interfaces:
+      config:
+        - ipv4:
+          - address: "{{ _int_ip_address }}/32"
+            name: "{{ _int_name }}"
+      state: merged
+    become: true
+  
+  - name: TESTING CONFIG
+    block:
+      - name: get ip routing table
+        cisco.ios.ios_command:
+          commands: "show ip int brief"
+        register: ios_ip_route
+

@@ -1,0 +1,23 @@
+---
+
+- name: PUSH OSPF CONFIGS TO DEVICES
+  hosts: all
+  gather_facts: no
+  connection: network_cli
+
+  tasks:
+
+  - name: "2.0: Cisco IOS Devices"
+    block:
+    - name: "2.1: write ACL to Cisco IOS"
+      cisco.ios.ios_acls: 
+        config: "{{ network_resources.acls }}"
+        state: replaced
+      register: _result_ios_acls
+    - name: "2.2: write acl interface to Cisco IOS"
+      cisco.ios.ios_acl_interfaces:
+        config: "{{ network_resources.acl_interfaces }}"
+        state: replaced
+      register: _result_ios_acl_interface
+    become: true
+    when: ansible_network_os == 'ios' and network_resources.acls is defined

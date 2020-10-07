@@ -6,9 +6,8 @@
   connection: network_cli
   vars:
     - ping_test_destination: "10.10.100.104"
-
   tasks:
-    
+
   - name: "2.0: Cisco IOS Devices"
     block:
     - name: "2.1: write interface attributes to Cisco IOS"

@@ -1,0 +1,24 @@
+---
+
+- name: STATIC ROUTE TO DEVICE
+  hosts: ios
+  gather_facts: no
+  connection: network_cli
+  vars:
+    _route_ip: "1.1.1.1"
+    _route_mask: "/32"
+    _route_next_hop: "1.1.1.2"
+
+  tasks:
+  
+  - name: add static route to IOS device
+    cisco.ios.ios_static_routes:
+      config: 
+        - afi: ipv4
+          routes:
+          - dest: "{{ _route_ip }}/{{ _route_mask }}"
+            next_hops:
+            - forward_router_address: "{{ _route_next_hop }}"
+              name: "route_{{ _route_ip }}_by_Ansible"
+      state: merged
+    become: true
