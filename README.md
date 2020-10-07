@@ -1,4 +1,4 @@
-# **Ansible Resource Modules Demo**
+# **Ansible Networking Resource Modules Demo**
 
 ### **Overview**
 Some Ansible playbooks to demonstrate different networking use cases with resource modules. 
